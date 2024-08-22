@@ -1,0 +1,20 @@
+Package: ANUBIX
+Title: Accurate Network Enrichment Analysis Test
+Version: 2.0.0
+Author: Miguel Castresana-Aguirre and Erik L.L. Sonnhammer
+Maintainer: Miguel Castresana-Aguirre <miguel.castresana@scilifelab.se>
+Description: Includes examples with data for accurate network enrichment analysis of gene sets against pathways.
+Depends: 
+	R (>= 3.4.0)
+Imports:
+    dplyr,
+    optimr,
+    TailRank,
+    parallel,
+    igraph,
+    purrr,
+    stats
+License: GPL-3
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
