@@ -1,15 +1,24 @@
-## ANUBIX ##
-ANUBIX is a genome-wide network analysis tool for pathway enrichment analysis. It is based on random sampling to build the expected crosstalk distribution between a query gene set and a pathway. The statistical significance is then assessed using a beta-binomial distribution.
+# **ANUBIX**
 
+**ANUBIX** is a genome-wide network analysis tool for pathway enrichment analysis. It is based on random sampling to build the expected crosstalk distribution between a query gene set and a pathway. The statistical significance is then assessed using a beta-binomial distribution.
 
-* ## Important Notes
-  * anubix_links() function needs to be run before any other operations.
-  * ANUBIX is designed specifically for processing undirected networks.
-  * We recommend using the newer anubix_constrained function instead of anubix to obtain improved results.
+### **Important Notes**
+- **`anubix_links()`** function needs to be run before any other operations.
+- **ANUBIX** is designed specifically for processing **undirected** networks.
+- We recommend using the newer **`anubix_constrained`** function instead of **`anubix`** to obtain more comprehensive results.
 
-## Instalation ##
+## **Getting Started**
 
-require(devtools)
-devtools::install_github("MiguelCastresana/anubix")
+### **Installation**
 
-Once it is installed follow the manual of the package ANUBIX (ANUBIX_MANUAL.pdf)
+To install **ANUBIX** from GitHub, use the following R code:
+
+```r
+# Install devtools or remotes if not already installed
+install.packages("devtools")  # or install.packages("remotes")
+
+# Install the ANUBIX package from GitHub
+devtools::install_github("MiguelCastresana/anubix")  # or remotes::install_github("MiguelCastresana/anubix")
+
+# Load the package
+library(anubix)
