@@ -6,8 +6,9 @@ anubix_links() function needs to be run before any other operations.
 ANUBIX is designed specifically for processing undirected networks.
 We recommend using the newer anubix_constrained function instead of anubix to obtain improved results.
 
-## Start analysis ##
+## Instalation ##
 
-* [[Installation]](https://bitbucket.org/sonnhammergroup/anubix/wiki/Instalation)
+require(devtools)
+devtools::install_github("MiguelCastresana/anubix")
 
 Once it is installed follow the manual of the package ANUBIX (ANUBIX_MANUAL.pdf)
