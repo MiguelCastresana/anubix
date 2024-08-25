@@ -26,6 +26,6 @@ devtools::install_github("MiguelCastresana/anubix")  # or remotes::install_githu
 
 # Load the package
 library(anubix)
-
+```
 **Contact**:  
 Miguel Castresana Aguirre ([miguel.castresana.aguirre@ki.se](mailto:miguel.castresana.aguirre@ki.se))
