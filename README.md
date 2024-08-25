@@ -4,10 +4,12 @@
 
 For a detailed explanation of **ANUBIX** and its applications, please refer to the [ANUBIX paper](https://pubmed.ncbi.nlm.nih.gov/32788619/) .
 
+Also check the **ANUBIX_manual** for detailed instructions.
+
 ### **Important Notes**
 - **`anubix_links()`** function needs to be run before any other operations.
 - **ANUBIX** is designed specifically for processing **undirected** networks.
-- We recommend using the newer **`anubix_constrained`** function instead of **`anubix`** to obtain more comprehensive results.
+- We recommend using the newest **`anubix_constrained`** function instead of **`anubix`** to obtain more sensitive and comprehensive results.
 
 ## **Getting Started**
 
