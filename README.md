@@ -1,7 +1,7 @@
 # **ANUBIX**
 
 <p align="center">
-  <img src="Figure.png" alt="drawing" width="300"/>
+  <img src="Figure.png" alt="drawing" width="400"/>
 </p>
 
 **ANUBIX** is a genome-wide network analysis tool for pathway enrichment analysis. It is based on random sampling to build the expected crosstalk distribution between a query gene set and a pathway. The statistical significance is then assessed using a beta-binomial distribution.
