@@ -1,12 +1,8 @@
 # **ANUBIX**
 
 <p align="center">
-  <img src="Figure.png"
-  alt="drawing" 
-  style="float: right;"
-  />
+  <img src="Figure.png" alt="drawing" width="300"/>
 </p>
-
 
 **ANUBIX** is a genome-wide network analysis tool for pathway enrichment analysis. It is based on random sampling to build the expected crosstalk distribution between a query gene set and a pathway. The statistical significance is then assessed using a beta-binomial distribution.
 
@@ -37,7 +33,6 @@ devtools::install_github("MiguelCastresana/anubix")  # or remotes::install_githu
 # Load the package
 library(anubix)
 ```
-<<<<<<< HEAD
 
 ### **Package content**
 1. **anubix_links**: Computation of all the links that each gene in the network has to each of the pathways.
@@ -65,7 +60,3 @@ compute enrichment.
 **Contact**:  
 Miguel Castresana Aguirre ([miguel.castresana.aguirre@ki.se](mailto:miguel.castresana.aguirre@ki.se))
 
-=======
-**Contact**:  
-Miguel Castresana Aguirre ([miguel.castresana.aguirre@ki.se](mailto:miguel.castresana.aguirre@ki.se))
->>>>>>> dc53307ac00c8f29f9c26c07b1feb3c385f88dec
