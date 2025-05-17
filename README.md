@@ -24,14 +24,23 @@ Also check the **ANUBIX_manual** for detailed instructions.
 To install **ANUBIX** from GitHub, use the following R code:
 
 ```r
-# Install devtools or remotes if not already installed
-install.packages("devtools")  # or install.packages("remotes")
+# 1. Make sure you have one of these helper packages:
+if (!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+if (!requireNamespace("devtools", quietly = TRUE)) {
+  install.packages("devtools")
+}
 
-# Install the ANUBIX package from GitHub
-devtools::install_github("MiguelCastresana/anubix")  # or remotes::install_github("MiguelCastresana/anubix")
+# 2. Use your preferred tool to install ANUBIX:
+#    - with remotes:
+remotes::install_github("MiguelCastresana/anubix")
 
-# Load the package
-library(anubix)
+#    - or with devtools:
+devtools::install_github("MiguelCastresana/anubix")
+
+# 3. Load the package
+library(ANUBIX)
 ```
 
 ### **Package content**
