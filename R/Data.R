@@ -32,7 +32,7 @@
 #' # However, to show an example for the link computation we use an a subset of funcoup network.
 #'
 #'
-#'  anubix_links(example_anubix$network,2,example_anubix$pathway_set,cutoff = 0.75, "weighted")
+#'  anubix_links(example_anubix$network,example_anubix$pathway_set,cutoff = 0.75, "weighted")
 #'
 #'  # Performs ANUBIX. We provide with the data necessary to run it directly.
 #'

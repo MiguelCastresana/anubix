@@ -15,7 +15,7 @@
 #' @param network_type Either "weighted" or "unweighted". The default value is \strong{weighted}.
 #' @importFrom TailRank dbb
 #' @importFrom dplyr %>% select
-#' @importFrom optimr optimr
+#' @importFrom optimx optimr
 #' @importFrom stats p.adjust
 #' @import parallel
 #' @export
@@ -526,7 +526,9 @@ anubix = function(network,links_matrix,
 
             }else{
               dat = as.data.frame(cbind(1:times, rep(max, times), subset))
-              optim.tas = optimr(inits, loglik)
+              optim.tas = optimx::optimr(par = inits, 
+                                         fn = loglik, method = "L-BFGS-B", control = list(allmeth = "L-BFGS-B", 
+                                                                                                  allpkg = "stats"))
 
               optim.tas$par = abs(optim.tas$par)
 
@@ -626,7 +628,9 @@ anubix = function(network,links_matrix,
         else {
           dat = as.data.frame(cbind(1:times, rep(max1, times),
                                     sol[[c]]))
-          optim.tas = optimr(inits, fn = loglik, x = dat)
+          optim.tas = optimx::optimr(par = inits, 
+                                     fn = loglik,x = dat, method = "L-BFGS-B", control = list(allmeth = "L-BFGS-B", 
+                                                                                      allpkg = "stats"))
           optim.tas$par = abs(optim.tas$par)
           pvalue = 0.5 * dbb(observed1, max1, optim.tas$par[1],
                              optim.tas$par[2]) + sum(dbb((observed1 + 1):(max1),

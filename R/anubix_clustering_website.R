@@ -10,7 +10,7 @@
 #' @importFrom dplyr %>% select
 #' @importFrom dplyr %>% group_by
 #' @importFrom dplyr %>% filter
-#' @importFrom optimr optimr
+#' @importFrom optimx optimr
 #' @importFrom stats p.adjust
 #' @import parallel
 #' @import igraph
@@ -435,7 +435,9 @@ anubix_clustering_website = function(network,
       else {
         dat = as.data.frame(cbind(1:times, rep(max1, times),
                                   sol[[c]]))
-        optim.tas = optimr(inits, fn = loglik, x = dat)
+        optim.tas = optimx::optimr(par = inits, 
+                                   fn = loglik,x = dat, method = "L-BFGS-B", control = list(allmeth = "L-BFGS-B", 
+                                                                                            allpkg = "stats"))
         optim.tas$par = abs(optim.tas$par)
         pvalue = 0.5 * dbb(observed1, max1, optim.tas$par[1],
                            optim.tas$par[2]) + sum(dbb((observed1 + 1):(max1),

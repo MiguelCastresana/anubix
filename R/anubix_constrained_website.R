@@ -11,7 +11,7 @@
 #' @param sampling A numeric value. Sampling is defined as the number of random samplings required to construct the null distribution. The default value is \strong{2000}
 #' @importFrom TailRank dbb
 #' @importFrom dplyr %>% select
-#' @importFrom optimr optimr
+#' @importFrom optimx optimr
 #' @importFrom stats p.adjust
 #' @import parallel
 #' @export
@@ -327,7 +327,9 @@ anubix_constrained_website = function(links_matrix,
           Y = dat[, 3]
           N = dat[, 2]
           n0 = dat[1, 2]
-          optim.tas = optimr(inits, loglik)
+          optim.tas = optimx::optimr(par = inits, 
+                                     fn = loglik, method = "L-BFGS-B", control = list(allmeth = "L-BFGS-B", 
+                                                                                              allpkg = "stats"))
           
           optim.tas$par = abs(optim.tas$par)
           
