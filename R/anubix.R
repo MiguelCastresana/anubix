@@ -1,18 +1,17 @@
-
 #' Perform ANUBIX for the provided gene sets
 #'
 #' @note anubix_links() needs to be run beforehand
 #' @description Computes ANUBIX, an accurate test for network enrichment analysis between query sets and pathway sets. Instead of normal random sampling it does constrained random sampling, taking the degree of the nodes into account.
-#' @usage anubix(network,links_matrix, genesets, pathways, cores = 2,cutoff = 0.8,
-#' sampling = 2000,network_type = "weighted")
-#' @param network A data.frame. Two columns if the network has no weights. Where column 1 and column 2 are genes. Each row means a link between genes. If the network is weighted, then the third column are the weights of the links.
-#' @param links_matrix A numeric matrix. Links_matrix stores the links each gene has to each pathway. The number of rows equals to the number of genes in the network and the number of columns equals to the number of pathways under study.
-#' @param genesets A data.frame of two columns. Column 1, are the genes and column 2 the experiment where they belong to.
-#' @param pathways A data.frame of two columns. Column 1 are the genes and second column the pathway where they belong to.
-#' @param cores A numeric value. Cores is defined as the number of cores used by the algorithm. The default value is \strong{2}
-#' @param sampling A numeric value. Sampling is defined as the number of random samplings required to construct the null distribution. The default value is \strong{2000}
-#' @param A numeric value. Cutoff is defined as the link confidence threshold of the weights between genes. The default value is \strong{0.8}.
-#' @param network_type Either "weighted" or "unweighted". The default value is \strong{weighted}.
+#' @usage anubix(network, links_matrix, genesets, pathways, cores = 2, cutoff = 0.8,
+#' sampling = 2000, network_type = "weighted")
+#' @param network A data.frame. Two columns if the network has no weights, where column 1 and column 2 are genes. Each row means a link between genes. If the network is weighted, then the third column contains the weights of the links.
+#' @param links_matrix A numeric matrix. Stores the links each gene has to each pathway. The number of rows equals the number of genes in the network and the number of columns equals the number of pathways under study.
+#' @param genesets A data.frame of two columns. Column 1 contains the genes and column 2 the experiment where they belong.
+#' @param pathways A data.frame of two columns. Column 1 contains the genes and column 2 the pathway where they belong.
+#' @param cores A numeric value. Number of cores used by the algorithm. Default is \strong{2}.
+#' @param sampling A numeric value. Number of random samplings required to construct the null distribution. Default is \strong{2000}.
+#' @param cutoff A numeric value. Link confidence threshold of the weights between genes. Default is \strong{0.8}.
+#' @param network_type Either "weighted" or "unweighted". Default is \strong{weighted}.
 #' @importFrom TailRank dbb
 #' @importFrom dplyr %>% select
 #' @importFrom optimx optimr
@@ -21,25 +20,28 @@
 #' @export
 #' @return A data frame with the following columns:
 #' \itemize{
-#'   \item geneset   -   Gene set under study.
-#'   \item pathway   -   Pathway under study.
-#'   \item obv_links -   Observed number of links between the gene set and the pathway.
-#'   \item exp_mean  -   Expected number of links between the gene set and the pathway.
-#'   \item overlap   -   Number of genes shared by the gene set and the pathway
-#'   \item p-value   -   p-value of the test.
-#'   \item q-value   -   Corrected p-value using Benjamini-Hochberg.
-#'   \item FWER      -   Corrected p-value using Bonferroni correction.
+#'   \item geneset   - Gene set under study.
+#'   \item pathway   - Pathway under study.
+#'   \item obv_links - Observed number of links between the gene set and the pathway.
+#'   \item exp_mean  - Expected number of links between the gene set and the pathway.
+#'   \item overlap   - Number of genes shared by the gene set and the pathway.
+#'   \item p-value   - p-value of the test.
+#'   \item q-value   - Corrected p-value using Benjamini-Hochberg.
+#'   \item FWER      - Corrected p-value using Bonferroni correction.
 #' }
-#'
-#' @seealso \code{\link{anubix_links}},\code{\link{anubix_transitivity}},\code{\link{anubix_clustering}},\code{\link{example_anubix}}
-#'
-#'
-#'
+#' @seealso \code{\link{anubix_links}}, \code{\link{anubix_transitivity}}, \code{\link{anubix_clustering}}, \code{\link{example_anubix}}
 #' @examples
-#' # We provide with example data to be able to run ANUBIX.
 #' \dontrun{
-#'  anubix(network = example_anubix$network,links_matrix = example_anubix$links_genes,genesets = example_anubix$gene_set,
-#'  pathways = example_anubix$pathway_set,cores = 2, cutoff = 0.8, sampling = 2000,network_type = "weighted")
+#'  anubix(
+#'    network = example_anubix$network,
+#'    links_matrix = example_anubix$links_genes,
+#'    genesets = example_anubix$gene_set,
+#'    pathways = example_anubix$pathway_set,
+#'    cores = 2,
+#'    cutoff = 0.8,
+#'    sampling = 2000,
+#'    network_type = "weighted"
+#'  )
 #' }
 
 
@@ -79,11 +81,7 @@ anubix = function(network,links_matrix,
     stop("Please introduce the proper data for the link count for each gene.")
   if (class(cores) != "numeric" | detectCores() < cores)
     stop("Please introduce a proper value.")
-  # genesets = as.data.frame(genesets)
-  # if (ncol(genesets) < 2){
-  #
-  #   genesets[,2] = rep("geneset1",nrow(genesets))
-  # }
+
   if (class(cutoff)!="numeric")
     stop("Link confidence cutoff is not in a proper format.")
   if (is.null(pathways) | class(pathways) != "data.frame" |
@@ -172,9 +170,6 @@ anubix = function(network,links_matrix,
   l = sapply(deg_possibilities, function(x) length(x))
 
 
-  # We are going to make bins of at least 100 genes, to not to pick the same genes all the time
-
-
 
   p = 1
   c = 1
@@ -241,12 +236,10 @@ anubix = function(network,links_matrix,
     sub1 = c(sub1,ok)
   }
 
-  # mapping done
 
   map_pos_deg_list = as.data.frame(cbind(sub, sub1))
 
 
-  # geneset = data[[1]]
 
   # Take the query gene sets and generate randomizations from it. Input gene set and number of randomizations
   #Opposite to %in%
@@ -257,7 +250,6 @@ anubix = function(network,links_matrix,
     b = b[with(b, order(Var1)), ]
     gens = as.vector(geneset[[1]])
     a = lapply(new_deg_list, function(x) x[which(x %!in% gens)])
-    # a = new_deg_list
     pos = map_pos_deg_list[which(map_pos_deg_list[, 1] %in%
                                    as.character(b[, 1])), 2]
     times = c(1:n_randomizations)
@@ -290,7 +282,6 @@ anubix = function(network,links_matrix,
                                                             y) {
 
         set.seed(times[i])
-        # set.seed(sample(times,1,replace = F))
         sample(x, y, replace = F)
       }, a[sub[,1]], sub[, 2], SIMPLIFY = FALSE)))
 
@@ -412,187 +403,6 @@ anubix = function(network,links_matrix,
       return(links)
     }
 
-
-    if (website == TRUE) {
-
-      loglik = function(inits) {
-        A <- inits[1]
-        B <- inits[2]
-        Y = dat[, 3]
-        N = dat[, 2]
-        - sum(
-          lgamma(abs(A) + abs(B)) - lgamma(abs(A)) - lgamma(abs(B)) + lgamma(Y + abs(A)) + lgamma(N -
-                                                                                                    Y + abs(B)) - lgamma(N + abs(A) + abs(B))
-        )
-      }
-
-      total = 0
-      result_t = data.frame()
-      timer = 1
-      cc = 1
-
-      for (timer in 1:length(set)) {
-        no_cores <- cores
-        cl <- makeCluster(no_cores)
-
-
-        times = sampling
-        geneset_test_list1 = geneset_test_list[cc:set[timer]]
-        data = parLapply(cl,geneset_test_list1, function(x) as.data.frame(x))
-        clusterExport(cl,
-                      list("sampling_generator", "new_deg_list","%!in%","map_pos_deg_list","times"),
-                      envir = environment())
-        length_geneset1 = length_genesets[cc:set[timer]]
-        group_sets1 = group_sets[cc:set[timer]]
-
-        prueba1 = parSapply(cl,data, function(x,y) sampling_generator(x,y), y = times)
-        prueba1 = lapply(prueba1, function(x){as.vector(unlist(x))})
-
-        clusterExport(cl, list("links_geneset", "links_matrix"), envir = environment())
-        query = parLapply(cl, prueba1, function(x)
-          links_geneset(x))
-
-        m <- length(query[[1]])
-        clusterExport(cl, list("m", "query"), envir = environment())
-        remove(prueba1)
-        information_list_true = parLapply(cl, 1:m, function(j)
-          sapply(query, "[[", j))
-        remove(query)
-        stopCluster(cl)
-
-        filtered_genesets = genesets[which(as.vector(genesets[, 1]) %in% index_genes),]
-        groups = as.vector(unique(filtered_genesets[, 2]))
-        i = 1
-        query_list = list()
-        for (i in 1:length(groups)) {
-          sub = filtered_genesets[which(filtered_genesets[, 2] %in% groups[i]), 1]
-          pos = which(index_genes %in% sub)
-          query_list[[i]] = pos
-
-        }
-        real_genesets = lapply(query_list[cc:set[timer]], function(x)
-          links_geneset_real(x))
-
-
-
-
-        nose = numeric()
-        names(real_genesets) = groups[cc:set[timer]]
-        paths = as.vector(unique(pathways[, 2]))
-
-        pvalue = numeric()
-        exp_mean = numeric()
-        gene_sets = vector()
-        pathwys = vector()
-        obv_links = numeric()
-        overlapp = numeric()
-        i = 1
-        y = 1
-        k = 1
-        d = times
-        for (i in 1:length(real_genesets)) {
-          j = 1
-          for (j in 1:length(information_list_true)) {
-            obv = as.numeric(as.vector(real_genesets[[i]][j]))
-            subset = information_list_true[[j]][y:d]
-            g_set = as.vector(genesets[, 1][which(genesets[, 2] %in% names(real_genesets[i]))])
-            overlap = length(g_set[which(g_set %in% as.vector(pathways[which(pathways[, 2] %in%
-                                                                               paths[j]), 1]))])
-            # if(is.na(overlap)==TRUE){overlap = 0}
-            max = as.numeric((length_geneset1[i] * length_pathways[j]) - min(length_geneset1[i],length_pathways[j]))
-
-
-            # if (mean(subset) == 0) {
-            #   subset[times] = 1
-            # }
-
-
-            n = max
-            m_1 = mean(subset)
-            m_2 = mean(subset ^ 2)
-
-            alpha = (n * m_1 - m_2) / (n * (m_2 / m_1 - m_1 - 1) + m_1)
-            beta = (n - m_1) * (n - m_2 / m_1) / (n * (m_2 / m_1 - m_1 - 1) +
-                                                    m_1)
-
-            inits = c(alpha, beta)
-
-
-            if (any(is.nan(inits)) == TRUE) {
-              pvalue[k]= NA
-
-            }else if (any(inits == 0) == TRUE) {
-              pvalue[k] = NA
-
-            }else{
-              dat = as.data.frame(cbind(1:times, rep(max, times), subset))
-              optim.tas = optimx::optimr(par = inits, 
-                                         fn = loglik, method = "L-BFGS-B", control = list(allmeth = "L-BFGS-B", 
-                                                                                                  allpkg = "stats"))
-
-              optim.tas$par = abs(optim.tas$par)
-
-
-
-              pvalue[k] = 0.5 * dbb(obv, max, optim.tas$par[1], optim.tas$par[2]) + sum(dbb((obv +
-                                                                                               1):(max),
-                                                                                            (max),
-                                                                                            optim.tas$par[1],
-                                                                                            optim.tas$par[2]))
-
-            }
-
-
-
-            exp_mean[k] = mean(subset)
-            obv_links[k] = obv
-            gene_sets[k] = names(real_genesets[i])
-            pathwys[k] = paths[j]
-            overlapp[k] = overlap
-            k = k + 1
-
-            # if callback is set, use it to send back the message:
-            if (!is.null(callback)) {
-              callback(paste(length(paths) - j, " pathways remaining", sep = ""))
-            }
-            print(paste(length(paths) - j, " pathways remaining", sep = ""))
-          }
-          y = y + times
-          d = d + times
-          total = total + 1
-          if (!is.null(callback)) {
-            callback(paste(sum(set) - total, " gene sets remaining", sep = ""))
-          }
-          print(paste(sum(set) - total, " gene sets remaining", sep = ""))
-        }
-
-        result = as.data.frame(cbind(gene_sets, pathwys, obv_links, exp_mean, overlapp, pvalue))
-        result[, 7] = p.adjust(pvalue, method = "BH")
-        # result[, 7] = p.adjust(pvalue, method = "BH")
-        # result[, 7] = p.adjust(result[, 6], method = "bonferroni")
-        result[, 8] = p.adjust(pvalue, method = "bonferroni")
-        result[, 3] = as.numeric(as.vector(result[, 3]))
-        result[, 4] = as.numeric(as.vector(result[, 4]))
-        result[, 5] = as.numeric(as.vector(result[, 5]))
-        result[, 6] = as.numeric(as.vector(result[, 6]))
-
-        result_t = rbind(result_t, result)
-
-        cc = set[timer] + 1
-
-
-
-      }
-      names(result_t) = c("geneset",
-                          "pathway",
-                          "obv_links",
-                          "exp_mean",
-                          "overlap",
-                          "p-value",
-                          "q-value",
-                          "FWER")
-
-    } else{
       total = 0
       timer = 1
       cc = 1
@@ -727,7 +537,7 @@ anubix = function(network,links_matrix,
                    function(y)
                      (y * x) - min(y,x))
           )))
-        # max = max - overlapp
+
 
         stopCluster(cl)
 
@@ -788,7 +598,7 @@ anubix = function(network,links_matrix,
           callback("100% of the process done")
         }
 
-        # if(timer>1){break}
+        
       }
       result_t = do.call(rbind, result_t)
       result_t[, 3] = as.numeric(as.vector(result_t[, 3]))
@@ -806,7 +616,7 @@ anubix = function(network,links_matrix,
                           "p-value",
                           "q-value",
                           "FWER")
-    }
+   
 
     return(result_t)
 

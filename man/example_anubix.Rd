@@ -3,53 +3,64 @@
 \docType{data}
 \name{example_anubix}
 \alias{example_anubix}
-\title{Example data provided with the package}
+\title{Example Data Provided with the Package}
 \format{
 An object of class \code{list} of length 4.
 }
 \source{
 \itemize{
-\item{\strong{pathway_set: }} Kanehisa, M., and Goto, S. (2002). KEGG: Kyoto Encyclopedia of Genes and Genomes. Nucleic Acids Res., 28(1), 27-30.
-\item{\strong{network: }} Schmitt,T., Ogris,C. and Sonnhammer,E.L.L. (2014) FunCoup 3.0: database of genome-wide functional coupling networks. Nucleic Acids Res., 42, D380–8.
+\item \strong{pathway_set: } Kanehisa, M., and Goto, S. (2002). KEGG: Kyoto Encyclopedia of Genes and Genomes. \emph{Nucleic Acids Research}, 28(1), 27–30.
+\item \strong{network: } Persson, E., Castresana-Aguirre, M., Buzzao, D., Guala, D., & Sonnhammer, E. L. L. (2021). FunCoup 5: functional association networks in all domains of life, supporting directed links and tissue-specificity. \emph{Journal of Molecular Biology}, 433(11), 166835. \doi{10.1016/j.jmb.2021.166835}
 }
 }
 \usage{
 example_anubix
 }
 \description{
-List collecting example data to be able to run ANUBIX
+A list containing example data for running ANUBIX, including a precomputed gene-pathway link matrix,
+pathway definitions, a gene set, and a network subset.
+
+The list contains:
 \itemize{
-\item \strong{links_genes}   -   The number of links each human gene has to KEGG pathways using a link confidence cutoff in the functional association network Funcoup 4.1 of 0.75. Dimensions 12444 rows (genes) and 288 columns (pathways)
-\item \strong{pathway_set}   -   288 KEGG pathways for \emph{Homo sapiens}.
-\item \strong{gene_set} -   Example gene set with 42 genes.
-\item \strong{network}  -   A subset from the Funcoup network for \emph{Homo sapiens}. 2000 links and 1788 genes.
+\item \strong{links_genes} – A gene-pathway link matrix computed using a confidence cutoff of 0.8 in the functional association network FunCoup 5.
+\item \strong{pathway_set} – A data.frame of 288 KEGG pathways for \emph{Homo sapiens}.
+\item \strong{gene_set} – An example gene set consisting of 42 genes.
+\item \strong{network} – A subset of the FunCoup 5 network for \emph{Homo sapiens}, containing 2000 links and 1788 genes.
 }
 }
 \examples{
 \dontrun{
- data(example_anubix)
+data(example_anubix)
 
+# We provide the precomputed link matrix (FunCoup 5, cutoff = 0.8) to run ANUBIX directly.
 
-# We provide with the precomputed matrix for Funcoup with a cutoff of 0.75 to run ANUBIX directly.
-# However, to show an example for the link computation we use an a subset of funcoup network.
+# Alternatively, compute the link matrix from the example network:
+anubix_links(
+  network = example_anubix$network,
+  pathways = example_anubix$pathway_set,
+  cutoff = 0.75,
+  network_type = "weighted"
+)
 
-
- anubix_links(example_anubix$network,example_anubix$pathway_set,cutoff = 0.75, "weighted")
-
- # Performs ANUBIX. We provide with the data necessary to run it directly.
-
- anubix(links_matrix = example_anubix$links_genes,genesets = example_anubix$gene_set,
- pathways = example_anubix$pathway_set,cores = 2,total_genes = 20000, sampling = 2000)
-
+# Run ANUBIX using the example data:
+ anubix(
+   network = example_anubix$network,
+   links_matrix = example_anubix$links_genes,
+   genesets = example_anubix$gene_set,
+   pathways = example_anubix$pathway_set,
+   cores = 2,
+   cutoff = 0.8,
+   sampling = 2000
+ )
 }
 }
 \references{
 \itemize{
-\item Kanehisa, M., and Goto, S. (2002). KEGG: Kyoto Encyclopedia of Genes and Genomes. Nucleic Acids Res., 28(1), 27-30.
-\item Schmitt,T., Ogris,C. and Sonnhammer,E.L.L. (2014) FunCoup 3.0: database of genome-wide functional coupling networks. Nucleic Acids Res., 42, D380–8.
+\item Kanehisa, M., and Goto, S. (2002). KEGG: Kyoto Encyclopedia of Genes and Genomes. \emph{Nucleic Acids Research}, 28(1), 27–30.
+\item Persson, E., Castresana-Aguirre, M., Buzzao, D., Guala, D., & Sonnhammer, E. L. L. (2021). FunCoup 5: functional association networks in all domains of life, supporting directed links and tissue-specificity. \emph{Journal of Molecular Biology}, 433(11), 166835. \doi{10.1016/j.jmb.2021.166835}
 }
 }
 \seealso{
-\code{\link{anubix}},\code{\link{anubix_links}},\code{\link{anubix_clustering}}
+\code{\link{anubix}},\code{\link{anubix_transitivity}}, \code{\link{anubix_links}}, \code{\link{anubix_clustering}}
 }
 \keyword{datasets}

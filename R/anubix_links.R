@@ -1,38 +1,60 @@
-#' Creates the link_matrix data
+#' Create the Link Matrix Between Genes and Pathways
 #'
+#' @description
+#' Computes the number or strength of connections that each gene in a network has to each pathway.
+#' This matrix can be used for downstream network enrichment analysis.
 #'
-#' @description Computation of all the links that each gene in the network has to each of the pathways.
-#' @usage anubix_links(network,cores = 2,pathways,cutoff = 0.75,network_type = "weighted")
-#' @param network A data.frame. Two columns if the network has no weights. Where column 1 and column 2 are genes. Each row means a link between genes. If the network is weighted, then the third column are the weights of the links.
-#' @param pathways A data.frame of two columns. Column 1 are the genes and second column the pathway where they belong to.
-#' @param cutoff A numeric value. Cutoff is defined as the link confidence threshold of the weights between genes. The default value is \strong{0.75}.
-#' @param network_type Either "weighted" or "unweighted". The default value is \strong{weighted}.
-#' @import igraph
-#' @importFrom purrr map
-#' @importFrom purrr set_names
-#' @importFrom tibble as_tibble
-#' @importFrom dplyr group_keys
-#' @importFrom dplyr group_split
-#' @importFrom dplyr pull
-#' @export
-#' @return A matrix with the following dimensions:
+#' @usage
+#' anubix_links(network, cores = 2, pathways, cutoff = 0.8, network_type = "weighted")
+#'
+#' @param network A data.frame representing the gene network.
+#'   \itemize{
+#'     \item If unweighted: Two columns (gene1, gene2), where each row represents an edge.
+#'     \item If weighted: Three columns, with the third column containing edge weights.
+#'   }
+#'
+#' @param cores Integer. Number of CPU cores to use for parallel computation. Default is 2.
+#'
+#' @param pathways A data.frame with two columns:
+#'   \itemize{
+#'     \item Column 1: gene names.
+#'     \item Column 2: corresponding pathway names.
+#'   }
+#'
+#' @param cutoff Numeric. Threshold to filter edges in a weighted network by confidence. Default is \strong{0.8}.
+#'
+#' @param network_type Character. Either \code{"weighted"} or \code{"unweighted"}. Default is \strong{"weighted"}.
+#'
+#' @return A numeric matrix where:
 #' \itemize{
-#'   \item nrows   -   Total number of genes in the studied network.
-#'   \item ncols   -   Total number of pathways under study.
+#'   \item Rows correspond to genes in the network.
+#'   \item Columns correspond to pathways.
+#'   \item Entries represent the number (or sum of weights) of links from each gene to each pathway.
 #' }
 #'
+#' @import igraph
+#' @importFrom purrr map set_names
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr group_keys group_split pull
+#' 
+#' @export
 #'
-#' @seealso \code{\link{anubix}},\code{\link{example_anubix}},\code{\link{anubix_clustering}}
+#' @seealso
+#' \code{\link{anubix}},\code{\link{anubix_transitivity}}, \code{\link{example_anubix}}, \code{\link{anubix_clustering}}
 #'
 #' @examples
-#'
-#' # Example with a tiny network:
-#'\dontrun{
-#' anubix_links(example_anubix$network,example_anubix$pathway_set,cutoff = 0.75, "weighted")
+#' \dontrun{
+#' # Example run on provided example data
+#' anubix_links(
+#'   network = example_anubix$network,
+#'   pathways = example_anubix$pathway_set,
+#'   cutoff = 0.8,
+#'   network_type = "weighted"
+#' )
 #' }
 
 
-anubix_links = function(network,pathways,cutoff = 0.75,network_type = "weighted"){
+anubix_links = function(network,pathways,cutoff = 0.8,network_type = "weighted"){
 
   if (is.null(network)){
 
@@ -42,7 +64,7 @@ anubix_links = function(network,pathways,cutoff = 0.75,network_type = "weighted"
     stop("Pathways file is missing", call.=FALSE)
   }else if(is.null(cutoff)){
 
-    cutoff = 0.75
+    cutoff = 0.8
   }
 
 

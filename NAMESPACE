@@ -2,8 +2,6 @@
 
 export(anubix)
 export(anubix_clustering)
-export(anubix_clustering_website)
-export(anubix_constrained_website)
 export(anubix_links)
 export(anubix_transitivity)
 import(igraph)

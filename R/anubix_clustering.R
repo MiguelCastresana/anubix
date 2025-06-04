@@ -4,10 +4,10 @@
 #' @description Clusters the gene set using Infomap and then applies ANUBIX.
 #' @usage anubix_clustering(network, links_matrix, genesets, pathways, cores = 2,
 #' sampling = 2000)
-#' @param network A data.frame. Two columns if the network has no weights. Where column 1 and column 2 are genes. Each row means a link between genes. If the network is weighted, then the third column are the weights of the links.
-#' @param links_matrix A numeric matrix. Links_matrix stores the links each gene has to each pathway. The number of rows equals to the number of genes in the network and the number of columns equals to the number of pathways under study.
-#' @param genesets A data.frame of two columns. Column 1, are the genes and column 2 the experiment where they belong to.
-#' @param pathways A data.frame of two columns. Column 1 are the genes and second column the pathway where they belong to.
+#' @param network A data.frame. Two columns if the network has no weights. Where the first column and the second column are genes. Each row means a link between genes. If the network is weighted, then the third column are the weights of the links.
+#' @param links_matrix A numeric matrix. links_matrix stores the links each gene has to each pathway. The number of rows equals the number of genes in the network and the number of columns equals the number of pathways under study.
+#' @param genesets A data.frame of two columns. The first column contains the genes and the second column the experiment where they belong to.
+#' @param pathways A data.frame of two columns. The first column contains the genes and the second column the pathway where they belong to.
 #' @param cores A numeric value. Cores is defined as the number of cores used by the algorithm. The default value is \strong{2}
 #' @param sampling A numeric value. Sampling is defined as the number of random samplings required to construct the null distribution. The default value is \strong{2000}
 #' @importFrom TailRank dbb
@@ -22,30 +22,28 @@
 #' @export
 #' @return A list with two dataframes:
 #' \itemize{
-#'   \item gene    -   Gene belonging to the module.
-#'   \item module   -   Module from the clustering approach.
-#' }
-#' \itemize{
 #'   \item geneset   -   Gene set under study.
 #'   \item pathway   -   Pathway under study.
 #'   \item obv_links -   Observed number of links between the gene set and the pathway.
 #'   \item exp_mean  -   Expected number of links between the gene set and the pathway.
-#'   \item overlap   -   Number of genes shared by the gene set and the pathway
+#'   \item overlap   -   Number of genes shared by the gene set and the pathway.
 #'   \item p-value   -   p-value of the test.
 #'   \item q-value   -   Corrected p-value using Benjamini-Hochberg.
 #'   \item FWER      -   Corrected p-value using Bonferroni correction.
 #'   \item module    -   Module from the clustering approach.
 #' }
 #'
-#' @seealso \code{\link{anubix}},\code{\link{anubix_transitivity}},\code{\link{anubix_old}},\code{\link{anubix_links}},\code{\link{example_anubix}}
-#'
-#'
+#' @seealso \code{\link{anubix}},\code{\link{anubix_transitivity}},\code{\link{anubix_links}},\code{\link{example_anubix}}
 #'
 #' @examples
 #' # We provide with example data to be able to run ANUBIX.
 #' \dontrun{
-#'  anubix_clustering(network = example_anubix$network,links_matrix = example_anubix$links_genes,genesets = example_anubix$gene_set,
-#'  pathways = example_anubix$pathway_set,cores = 2, sampling = 2000,cutoff = 0.75,network_type = "weighted")
+#'  anubix_clustering(network = example_anubix$network,
+#'                    links_matrix = example_anubix$links_genes,
+#'                    genesets = example_anubix$gene_set,
+#'                    pathways = example_anubix$pathway_set,
+#'                    cores = 2,
+#'                    sampling = 2000)
 #' }
 
 

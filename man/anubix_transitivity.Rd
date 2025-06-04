@@ -2,55 +2,63 @@
 % Please edit documentation in R/anubix_transitivity.R
 \name{anubix_transitivity}
 \alias{anubix_transitivity}
-\title{Perform ANUBIX for the provided gene sets}
+\title{Perform ANUBIX transitivity test for the provided gene sets}
 \usage{
-anubix_transitivity(network,links_matrix, genesets, pathways, cores = 2,cutoff = 0.8,
-sampling = 2000,network_type = "weighted")
+anubix_transitivity(network, links_matrix, genesets, pathways, cores = 2, cutoff = 0.8,
+sampling = 2000, network_type = "weighted")
 }
 \arguments{
-\item{network}{A data.frame. Two columns if the network has no weights. Where column 1 and column 2 are genes. Each row means a link between genes. If the network is weighted, then the third column are the weights of the links.}
+\item{network}{A data.frame. Two columns if the network has no weights, where the first column and second column are genes. Each row represents a link between genes. If weighted, the third column contains the weights of the links.}
 
-\item{links_matrix}{A numeric matrix. Links_matrix stores the links each gene has to each pathway. The number of rows equals to the number of genes in the network and the number of columns equals to the number of pathways under study.}
+\item{links_matrix}{A numeric matrix. Stores the links each gene has to each pathway. Rows correspond to genes in the network; columns correspond to pathways.}
 
-\item{genesets}{A data.frame of two columns. Column 1, are the genes and column 2 the experiment where they belong to.}
+\item{genesets}{A data.frame with two columns: the first column contains genes, the second column the experiment they belong to.}
 
-\item{pathways}{A data.frame of two columns. Column 1 are the genes and second column the pathway where they belong to.}
+\item{pathways}{A data.frame with two columns: the first column contains genes, the second column the pathway they belong to.}
 
-\item{cores}{A numeric value. Cores is defined as the number of cores used by the algorithm. The default value is \strong{2}}
+\item{cores}{Numeric. Number of CPU cores used by the algorithm. Default is \strong{2}.}
 
-\item{sampling}{A numeric value. Sampling is defined as the number of random samplings required to construct the null distribution. The default value is \strong{2000}}
+\item{cutoff}{Numeric. Link confidence threshold for weights between genes. Default is \strong{0.8}.}
 
-\item{network_type}{Either "weighted" or "unweighted". The default value is \strong{weighted}.}
+\item{sampling}{Numeric. Number of random samplings to construct the null distribution. Default is \strong{2000}.}
 
-\item{A}{numeric value. Cutoff is defined as the link confidence threshold of the weights between genes. The default value is \strong{0.8}.}
+\item{network_type}{Character. Either "weighted" or "unweighted". Default is \strong{weighted}.}
 }
 \value{
-A data frame with the following columns:
+A data.frame with columns:
 \itemize{
-\item geneset   -   Gene set under study.
-\item pathway   -   Pathway under study.
-\item obv_links -   Observed number of links between the gene set and the pathway.
-\item exp_mean  -   Expected number of links between the gene set and the pathway.
-\item overlap   -   Number of genes shared by the gene set and the pathway
-\item p-value   -   p-value of the test.
-\item q-value   -   Corrected p-value using Benjamini-Hochberg.
-\item FWER      -   Corrected p-value using Bonferroni correction.
+\item geneset   - Gene set under study.
+\item pathway   - Pathway under study.
+\item obv_links - Observed number of links between the gene set and the pathway.
+\item exp_mean  - Expected number of links between the gene set and the pathway.
+\item overlap   - Number of genes shared by the gene set and the pathway.
+\item p-value   - p-value of the test.
+\item q-value   - Corrected p-value using Benjamini-Hochberg procedure.
+\item FWER      - Corrected p-value using Bonferroni correction.
 }
 }
 \description{
-Computes ANUBIX, an accurate test for network enrichment analysis between query sets and pathway sets. Instead of normal random sampling it does constrained random sampling, taking the degree of the nodes into account.
-Additionally, it takes into account the gene set´s transitivity to compute enrichment.
+Computes ANUBIX transitivity, an accurate test for network enrichment analysis between query sets and pathway sets.
+Instead of normal random sampling, it performs constrained random sampling, taking the degree of the nodes into account.
+Additionally, it incorporates the gene set’s transitivity to compute enrichment.
 }
 \note{
-anubix_links() needs to be run beforehand
+anubix_links() needs to be run beforehand.
 }
 \examples{
-# We provide with example data to be able to run ANUBIX.
 \dontrun{
- anubix_transitivity(network = example_anubix$network,links_matrix = example_anubix$links_genes,genesets = example_anubix$gene_set,
- pathways = example_anubix$pathway_set,cores = 2, cutoff = 0.8, sampling = 2000,network_type = "weighted")
+ anubix_transitivity(
+   network = example_anubix$network,
+   links_matrix = example_anubix$links_genes,
+   genesets = example_anubix$gene_set,
+   pathways = example_anubix$pathway_set,
+   cores = 2,
+   cutoff = 0.8,
+   sampling = 2000,
+   network_type = "weighted"
+ )
 }
 }
 \seealso{
-\code{\link{anubix_links}},\code{\link{example_anubix}},\code{\link{anubix_clustering}},\code{\link{anubix}}
+\code{\link{anubix_links}}, \code{\link{example_anubix}}, \code{\link{anubix_clustering}}, \code{\link{anubix}}
 }
