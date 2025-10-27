@@ -200,6 +200,23 @@ anubix_clustering = function(network,
   
   nocluster = genesets
   names(nocluster) = c("gene","geneset")
+  
+  
+  if (!nrow(modules1)) {
+    msg <- "No clusters/modules were found for any geneset (likely no intra-geneset edges after filtering)."
+    message(msg)
+    empty_res <- data.frame(geneset=character(), pathway=character(),
+                            obv_links=double(), exp_mean=double(),
+                            overlap=double(), `p-value`=double(),
+                            `q-value`=double(), FWER=double(),
+                            module=character(), stringsAsFactors = FALSE)
+    return(list(
+      modules = modules1[, c("gene","module"), drop = FALSE],
+      results = empty_res,
+      note    = msg
+    ))
+  }
+  
 
   freq = as.data.frame(table(as.vector(nocluster[,2])))
 
@@ -234,7 +251,8 @@ anubix_clustering = function(network,
   
   genes_net = unique(c(as.vector(net[,1]),as.vector(net[,2])))
   
-  geneset_g = unique(as.vector(geneset[,1]))
+  geneset_g <- unique(as.character(genesets$gene))
+
   
   # genes in network
   genes_in_network = length(geneset_g[which(geneset_g%in%genes_net)])/length(geneset_g)
