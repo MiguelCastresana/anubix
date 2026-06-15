@@ -1,5 +1,7 @@
 # False positive benchmarking of gene sets in FunCoup network using ANUBIX null model
 
+source(file.path("src_analysis", "paths.R"))
+
 # --- 1. Libraries ---
 library(fastmatch)
 library(parallel)
@@ -9,7 +11,7 @@ library(TailRank)
 library(optimr)
 
 # --- 2. Load network and prepare gene universe ---
-net_full <- read.delim("~/anubix/anubix_benchmark/data/fc3.tsv", header = TRUE)
+net_full <- read.delim(benchmark_file("data", "fc3.tsv"), header = TRUE)
 net <- subset(net_full, V3 >= 0.75)[, 1:3]
 genes <- unique(c(net_full$V1, net_full$V2))
 
@@ -26,9 +28,9 @@ names(deg_df) <- c("gene", "degree")
 
 # --- 3. Load gene sets and pathways ---
 # Random gene sets for false positive testing
-KEGGA <- read.delim("~/anubix/anubix_benchmark/data/randomsets_10000", header = TRUE)
+KEGGA <- read.delim(benchmark_file("data", "randomsets_10000"), header = TRUE)
 # KEGG pathways
-KEGGB <- read.delim("~/anubix/anubix_benchmark/data/KEGG_pathways", header = FALSE)
+KEGGB <- read.delim(benchmark_file("data", "KEGG_pathways"), header = FALSE)
 
 sets <- unique(KEGGA$V2)
 paths <- unique(KEGGB$V2)
@@ -44,7 +46,7 @@ tally_links <- function(gs, link_mat) {
 }
 
 # Load ANUBIX link matrix
-link_mat <- read.delim("~/anubix/anubix_benchmark/data/link_matrix.tsv", row.names = 1, header = TRUE)
+link_mat <- read.delim(benchmark_file("data", "link_matrix.tsv"), row.names = 1, header = TRUE)
 
 # Prepare real links for each set
 real_links_list <- lapply(geneset_test_list, tally_links, link_mat)
@@ -53,7 +55,7 @@ length_B <- table(KEGGB$V2)[paths]
 
 # --- 4. Load precomputed null model samples ---
 # Assumes `false_positive_test_sets_for_nullmodel` provides `prueba1`: list of random gene vectors
-load("~/anubix/anubix_benchmark/data/false_positive_test_sets_for_nullmodel")
+load(benchmark_file("data", "false_positive_test_sets_for_nullmodel"))
 # `prueba1` should be a list of length equal to unique set size (110), each containing `times` random samples
 prueba1 <- lapply(prueba1, unlist)
 
@@ -62,7 +64,7 @@ links_rand <- function(gs) {
   subm <- link_mat[rownames(link_mat) %fin% gs, , drop = FALSE]
   colSums(subm)
 }
-no_cores <- detectCores() - 2
+no_cores <- max(1, detectCores() - 2)
 cl <- makeCluster(no_cores)
 clusterEvalQ(cl, library(stringi)); clusterEvalQ(cl, library(fastmatch))
 clusterExport(cl, c("links_rand", "link_mat"), envir = environment())

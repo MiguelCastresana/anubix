@@ -1,5 +1,7 @@
 # Benchmark MSigDB geneset against KEGG pathways using ANUBIX with convergence check
 
+source(file.path("src_analysis", "paths.R"))
+
 # Libraries
 library(fastmatch)
 library(parallel)
@@ -8,11 +10,11 @@ library(TailRank)
 library(optimr)
 
 # --- 1. Load data ---
-msigdb <- read.delim("~/anubix/anubix_benchmark/data/msigdb", header = TRUE)
+msigdb <- read.delim(benchmark_file("data", "msigdb"), header = TRUE)
 geneset1 <- subset(msigdb, V2 == "DAIRKEE_CANCER_PRONE_RESPONSE_BPA")
 geneset1$V2 <- as.character(geneset1$V2)
 
-net <- read.delim("~/anubix/anubix_benchmark/data/fc3.tsv", header = TRUE)
+net <- read.delim(benchmark_file("data", "fc3.tsv"), header = TRUE)
 genes <- unique(c(net[,1], net[,2]))
 
 # --- 2. Build gene universe ---
@@ -22,10 +24,10 @@ get_random_string <- function(n = 1, length = 15) {
 rnd <- get_random_string(20000 - length(genes))
 genesall <- c(genes, rnd)
 
-output1 <- read.delim("~/anubix/anubix_benchmark/data/link_matrix.tsv", header = TRUE)
+output1 <- read.delim(benchmark_file("data", "link_matrix.tsv"), row.names = 1, header = TRUE)
 
 # --- 3. Prepare KEGG pathways ---
-KEGG <- read.delim("~/anubix/anubix_benchmark/data/KEGG_pathways", header = FALSE)
+KEGG <- read.delim(benchmark_file("data", "KEGG_pathways"), header = FALSE)
 paths <- unique(KEGG$V2)
 KGG_list <- split(KEGG, f = KEGG$V2)
 length_genesetB <- sapply(KGG_list, nrow)
@@ -48,7 +50,7 @@ pvalue_list <- vector("list", reps)
 
 for (r in seq_len(reps)) {
   # parallel cluster
-  cores <- detectCores() - 1
+  cores <- max(1, detectCores() - 1)
   cl <- makeCluster(cores)
   clusterEvalQ(cl, { library(stringi); library(fastmatch) })
   clusterExport(cl, c("samples_fun", "genesall", "times"), envir = environment())
@@ -124,7 +126,7 @@ conf_int95 <- data.frame(pathway = paths[seq_len(nrow(conf_int95))],
                          Lower_bound = conf_int95[,1], Upper_bound = conf_int95[,2])
 
 # --- 6. Convergence: CV <= 0.02 ---
-no_cores <- detectCores() - 1
+no_cores <- max(1, detectCores() - 1)
 cl <- makeCluster(no_cores)
 clusterEvalQ(cl, { library(stringi); library(fastmatch) })
 clusterExport(cl, c("samples_fun","genesall"), envir = environment())

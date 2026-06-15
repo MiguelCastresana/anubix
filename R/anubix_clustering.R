@@ -105,20 +105,6 @@ anubix_clustering = function(network,
     
     net = network
   }
-  
-  
-  
-  
-  # net = read.delim("/scratch/Funcoup_versions_analysis/fc4.1_human", header = T)
-  # net = net[which(net[,1]>=0.75),c(3,4,1)]
-  # pathways = read.delim("/scratch/KEGG_FC4.1", header = T)
-  # genesets = pathways[1:100,]
-  # links_matrix = anubix_links(net,pathways,cutoff = 0.75, "weighted")
-  # cores = 2
-  # sampling = 2000
-  
- 
-  
   group_sets = unique(as.vector(genesets[, 2]))
   # Infomap clustering method
   
@@ -692,7 +678,6 @@ anubix_clustering = function(network,
               if (!is.null(callback)) {
                 callback(paste(length(paths) - j, " pathways remaining", sep = ""))
               }
-              print(paste(length(paths) - j, " pathways remaining", sep = ""))
             }
             y = y + times
             d = d + times
@@ -700,7 +685,6 @@ anubix_clustering = function(network,
             if (!is.null(callback)) {
               callback(paste(sum(set) - total, " gene sets remaining", sep = ""))
             }
-            print(paste(sum(set) - total, " gene sets remaining", sep = ""))
           }
           
           result = as.data.frame(cbind(gene_sets, pathwys, obv_links, exp_mean, overlapp, pvalue))
@@ -951,7 +935,6 @@ anubix_clustering = function(network,
           remove(positions)
           remove(overlapp)
           cc = set[timer] + 1
-          print(timer)
           if (!is.null(callback)) {
             callback("100% of the process done")
           }

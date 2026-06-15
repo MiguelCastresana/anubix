@@ -43,7 +43,7 @@ loglik <- function(inits, dat) {
 run_anubix_benchmark <- function(kegga_path, keggb_path, link_matrix_path, net_path, output_path, times = 2000) {
   KEGGA <- read.delim(kegga_path, header = TRUE)
   KEGGB <- read.delim(keggb_path, header = TRUE)
-  output1 <- read.delim(link_matrix_path, header = TRUE)
+  output1 <- read.delim(link_matrix_path, row.names = 1, header = TRUE)
   net <- read.delim(net_path, header = TRUE)
   
   paths <- unique(as.vector(KEGGB[, 2]))
@@ -60,7 +60,7 @@ run_anubix_benchmark <- function(kegga_path, keggb_path, link_matrix_path, net_p
   genes <- unique(c(as.vector(net[, 1]), as.vector(net[, 2])))
   genesall <- c(genes, get_random_string(20000 - length(genes), 15))
   
-  no_cores <- detectCores() - 2
+  no_cores <- max(1, detectCores() - 2)
   cl <- makeCluster(no_cores)
   clusterExport(cl, list("samples", "genesall", "times"), envir = environment())
   
@@ -68,11 +68,11 @@ run_anubix_benchmark <- function(kegga_path, keggb_path, link_matrix_path, net_p
   prueba1 <- parSapply(cl, data_lengths, function(x) lapply(1:times, function(y) samples(x, genesall)))
   prueba1 <- lapply(prueba1, unlist)
   
-  clusterExport(cl, list("links_geneset", "output1"), envir = environment())
   links_geneset <- function(geneset) {
     subset <- output1[rownames(output1) %fin% geneset, ]
     colSums(subset)
   }
+  clusterExport(cl, list("links_geneset", "output1"), envir = environment())
   
   query <- parLapply(cl, prueba1, function(x) links_geneset(x))
   m <- length(query[[1]])

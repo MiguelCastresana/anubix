@@ -517,7 +517,6 @@ anubix_transitivity = function(network,links_matrix,
         remove(positions)
         remove(overlapp)
         cc = set[timer] + 1
-        print(timer)
         if (!is.null(callback)) {
           callback("100% of the process done")
         }

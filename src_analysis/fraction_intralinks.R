@@ -1,5 +1,7 @@
 # Compute mixing parameters for KEGG pathways in FunCoup network
 
+source(file.path("src_analysis", "paths.R"))
+
 # Libraries
 library(fastmatch)
 library(ggplot2)
@@ -7,8 +9,8 @@ library(cowplot)
 library(scales)
 
 # --- 1. Load data ---
-KEGG <- read.delim("~/anubix/anubix_benchmark/data/KEGG_pathways", header = FALSE)
-net <- read.delim("~/anubix/anubix_benchmark/data/fc3.tsv", header = TRUE)
+KEGG <- read.delim(benchmark_file("data", "KEGG_pathways"), header = FALSE)
+net <- read.delim(benchmark_file("data", "fc3.tsv"), header = TRUE)
 # Filter edges by weight threshold
 net <- subset(net, V3 >= 0.75)[, 1:3]
 
@@ -38,7 +40,7 @@ compute_mixing <- function(path_id) {
     total_n <- nrow(incident)
     inside_n <- nrow(inside)
     # Mixing parameter: fraction of edges leaving pathway
-    mix_param <- (total_n - inside_n) / total_n
+    mix_param <- if (total_n == 0) 0 else (total_n - inside_n) / total_n
     # Node degree from global degree table
     deg <- deg_df$degree[match(g, deg_df$gene)]
     if (is.na(deg)) deg <- 0
@@ -55,7 +57,7 @@ compute_mixing <- function(path_id) {
   
   # Weighted mixing (normalized by total degree)
   total_degree <- sum(degrees)
-  weight_norm <- degrees / total_degree
+  weight_norm <- if (total_degree == 0) rep(0, length(degrees)) else degrees / total_degree
   weighted_mixing <- mixing * weight_norm
   
   data.frame(
@@ -85,7 +87,7 @@ total_out <- sapply(mixing_list, function(df) sum(df$weighted, na.rm = TRUE))
 frac_intra <- 1 - (total_out / total_links)
 
 # Load functional performance (FPR) from supplementary
-fps <- read.delim("~/anubix/Supplementary_data/Supplementary_Data_3", header = TRUE)
+fps <- read.delim(benchmark_file("Supplementary_data", "Supplementary_Data_3"), header = TRUE)
 fps_sub <- fps[match(paths, fps$pathway), ]
 
 # Combine into data frame
@@ -121,6 +123,6 @@ library(cowplot)
 p <- ggdraw(p) + draw_plot_label("B", size = 14)
 
 # Save plot
-tiff("~/output.tiff", width = 5.5, height = 4.5, units = "in", res = 400)
+tiff(output_file("fraction_intralinks.tiff"), width = 5.5, height = 4.5, units = "in", res = 400)
 print(p)
 dev.off()
