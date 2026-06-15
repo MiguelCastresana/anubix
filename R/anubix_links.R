@@ -54,40 +54,55 @@
 #' }
 
 
-anubix_links = function(network,pathways,cutoff = 0.8,network_type = "weighted"){
+anubix_links <- function(network, pathways, cutoff = 0.8, network_type = "weighted") {
 
-  if (is.null(network)){
-
-    stop("Network file is missing", call.=FALSE)
-  }else if(is.null(pathways)){
-
-    stop("Pathways file is missing", call.=FALSE)
-  }else if(is.null(cutoff)){
-
-    cutoff = 0.8
+  if (is.null(network)) {
+    stop("Network file is missing", call. = FALSE)
+  } else if (is.null(pathways)) {
+    stop("Pathways file is missing", call. = FALSE)
+  } else if (is.null(cutoff)) {
+    cutoff <- 0.8
   }
 
-
-  if (is.null(pathways) | ncol(pathways) != 2)
+  if (is.null(pathways) || ncol(pathways) != 2) {
     stop("Pathways missing or the file is not in a proper format.")
-  if (is.null(network) | ncol(network) < 2)
-    stop("A network is required or it is not in a proper format.")
-  if (class(cutoff)!="numeric")
-    stop("Link confidence cutoff is not in a proper format.")
-  if(is.null(network_type)){network_type = "weighted"}
-
-
-
-  if(network_type=="weighted" ){
-    net = network[which(network[,3]>=cutoff),]
-  }else{
-
-    net = network
   }
+  if (is.null(network) || ncol(network) < 2) {
+    stop("A network is required or it is not in a proper format.")
+  }
+  if (!is.numeric(cutoff) || length(cutoff) != 1) {
+    stop("Link confidence cutoff is not in a proper format.")
+  }
+  if (is.null(network_type)) {
+    network_type <- "weighted"
+  }
+  if (!network_type %in% c("weighted", "unweighted")) {
+    stop("network_type must be either 'weighted' or 'unweighted'.")
+  }
+  if (network_type == "weighted" && ncol(network) < 3) {
+    stop("A weighted network must contain a third column with edge weights.")
+  }
+
+  if (network_type == "weighted") {
+    net <- network[network[, 3] >= cutoff, , drop = FALSE]
+    net <- data.frame(
+      from = net[, 1],
+      to = net[, 2],
+      weight = as.numeric(net[, 3])
+    )
+  } else {
+    net <- data.frame(
+      from = network[, 1],
+      to = network[, 2]
+    )
+  }
+
   # convert network to igraph
   net_graph <- graph_from_data_frame(net, directed = FALSE, vertices = NULL)
+
   # get the adjacency matrix
-  net_adjacency <- as_adjacency_matrix(net_graph, names = TRUE)
+  edge_attr <- if (network_type == "weighted") "weight" else NULL
+  net_adjacency <- as_adjacency_matrix(net_graph, attr = edge_attr, names = TRUE)
   
   # add 2 in the diagonal, to boost overlap
   # overlap = diag(2,dim(net_adjacency)[1],dim(net_adjacency)[1])
@@ -96,8 +111,8 @@ anubix_links = function(network,pathways,cutoff = 0.8,network_type = "weighted")
   net_nodes <- V(net_graph)$name
 
   # filter pathways for nodes not in FC
-  pathways = as_tibble(pathways)
-  names(pathways) = c("symbol","pathway_names")
+  pathways <- as_tibble(pathways)
+  names(pathways) <- c("symbol", "pathway_names")
   pathway_list_filtered <- pathways %>%
     dplyr::filter(symbol %in% net_nodes)
 
@@ -111,20 +126,12 @@ anubix_links = function(network,pathways,cutoff = 0.8,network_type = "weighted")
   links_matrix <- matrix(0, nrow = length(net_nodes), ncol = length(pathway_list_clean),
                          dimnames = list(net_nodes, names(pathway_list_clean)))
 
-  # Fill the start_matrix with number of links each gene has to a pathway
+  # Fill the matrix with the number or strength of links each gene has to a pathway.
   for (pathw in names(pathway_list_clean)) {
     path_nodes <- as.character(as.vector(pathway_list_clean[[pathw]]))
-    links_matrix[, pathw] <- Matrix::rowSums(net_adjacency[, path_nodes,drop=F])
+    links_matrix[, pathw] <- Matrix::rowSums(net_adjacency[, path_nodes, drop = FALSE])
   }
-  links_matrix = as.data.frame(links_matrix)
+  links_matrix <- as.data.frame(links_matrix)
   return(links_matrix)
-
-
 }
-
-
-
-
-
-
 

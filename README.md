@@ -1,71 +1,99 @@
-# **ANUBIX**
+# ANUBIX
+
+ANUBIX is an R package for network-based pathway enrichment analysis. It estimates the expected crosstalk between a query gene set and pathway gene sets by random sampling, then evaluates enrichment with a beta-binomial model.
 
 <p align="center">
-  <img src="Figure.png" alt="drawing" width="400"/>
+  <img src="Figure.png" alt="ANUBIX overview" width="420" />
 </p>
 
-**ANUBIX** is a genome-wide network analysis tool for pathway enrichment analysis. It is based on random sampling to build the expected crosstalk distribution between a query gene set and a pathway. The statistical significance is then assessed using a beta-binomial distribution.
+For background and methodology, see the [ANUBIX paper](https://pubmed.ncbi.nlm.nih.gov/32788619/) and the PathBIX web implementation at <https://pathbix.sbc.su.se/>.
 
-For a detailed explanation of **ANUBIX** and its applications, please refer to the [ANUBIX paper](https://pubmed.ncbi.nlm.nih.gov/32788619/).
+## What The Package Provides
 
-You can also explore ANUBIX and the clustering implementation in our website called [PathBIX](https://pathbix.sbc.su.se/)
+| Function | Purpose |
+| --- | --- |
+| `anubix_links()` | Precomputes network links from each network gene to each pathway. Run this before enrichment. |
+| `anubix()` | Runs the ANUBIX network-enrichment test with degree-constrained sampling. |
+| `anubix_transitivity()` | Adds gene-set transitivity as an additional constraint. |
+| `anubix_clustering()` | Clusters a query gene set with Infomap before applying ANUBIX. |
 
-Also check the **ANUBIX_manual** for detailed instructions.
-
-### **Important Notes**
-- **`anubix_links()`** function needs to be run before any other operations.
-- **ANUBIX** is designed specifically for processing **undirected** networks.
-- We recommend using the newest **`anubix_constrained`** function instead of **`anubix`** to obtain more sensitive and comprehensive results.
-
-## **Getting Started**
-
-### **Installation**
-
-To install **ANUBIX** from GitHub, use the following R code:
+## Installation
 
 ```r
-# 1. Make sure you have one of these helper packages:
 if (!requireNamespace("remotes", quietly = TRUE)) {
   install.packages("remotes")
 }
-if (!requireNamespace("devtools", quietly = TRUE)) {
-  install.packages("devtools")
-}
 
-# 2. Use your preferred tool to install ANUBIX:
-#    - with remotes:
 remotes::install_github("MiguelCastresana/anubix")
-
-#    - or with devtools:
-devtools::install_github("MiguelCastresana/anubix")
-
-# 3. Load the package
 library(ANUBIX)
 ```
 
-### **Package content**
-1. **anubix_links**: Computation of all the links that each gene in the network has to each of the pathways.
+## Basic Workflow
 
-2. **anubix**: Computes ANUBIX, an accurate test for network enrichment analysis between query sets and pathway sets. Instead of normal random sampling it does constrained random sampling, taking the
-degree of the nodes into account.
+```r
+library(ANUBIX)
 
-3. **anubix_transitivity**: Same than **anubix** but additionally, it takes into account the gene set´s transitivity (a measure of the tendency of the nodes to cluster together) to
-compute enrichment.
+links <- anubix_links(
+  network = example_anubix$network,
+  pathways = example_anubix$pathway_set,
+  cutoff = 0.8,
+  network_type = "weighted"
+)
 
-4. **anubix_clustering**: Clusters the gene set using Infomap (a method that uses information theory to cluster genes into modules) and then applies ANUBIX.
+result <- anubix(
+  network = example_anubix$network,
+  links_matrix = links,
+  genesets = example_anubix$gene_set,
+  pathways = example_anubix$pathway_set,
+  cores = 2,
+  cutoff = 0.8,
+  sampling = 2000,
+  network_type = "weighted"
+)
+```
 
+Important notes:
 
+- Networks are treated as undirected.
+- `anubix_links()` should be run before enrichment.
+- Weighted networks are supported by `anubix_links()` when a weight column is provided.
+- `anubix()` is the main enrichment entry point for most analyses.
 
-### **Analysis**
-1. **TP_analysis.R**: Performs true‑positive benchmarking by splitting KEGG and REACTOME pathways into two halves.
+## Development And Tests
 
-2. **FP_analysis.R**: Performs false‑positive benchmarking by generating random genesets and performing pathway enrichment analysis in KEGG or REACTOME databases.
+Install test dependencies into the repo-local library:
 
-3. **stability_analysis.R**: Empirically benchmark a MSigDB gene set against KEGG pathways using ANUBIX, deriving p-value confidence intervals and determining sample size for CV≤0.02 convergence.
+```bash
+Rscript tools/install-test-deps.R
+```
 
-4. **fraction_intralinks.R**: Computes KEGG‐pathway mixing parameters in the FunCoup network (fraction of edges leaving each pathway), correlates them with BinoX FPR, and produces a log‐scaled scatterplot.
+Run unit tests:
 
+```bash
+Rscript tools/run-tests.R
+```
 
-**Contact**:  
-Miguel Castresana Aguirre ([miguel.castresana.aguirre@ki.se](mailto:miguel.castresana.aguirre@ki.se))
+Run the optional FunCoup plus KEGG integration test:
 
+```bash
+Rscript tools/run-integration-tests.R
+```
+
+The integration test downloads a small FunCoup network and KEGG pathway mappings for `Methanocaldococcus jannaschii`, then verifies that ANUBIX recovers an expected pathway signal.
+
+## Repository Layout
+
+```text
+.
+├── R/                 # Package source
+├── man/               # Function documentation
+├── tests/testthat/    # Unit and optional integration tests
+├── tools/             # Dependency, test, and diagnostic helpers
+├── DESCRIPTION
+└── README.md
+```
+
+## Contact
+
+Miguel Castresana Aguirre  
+[miguel.castresana.aguirre@ki.se](mailto:miguel.castresana.aguirre@ki.se)

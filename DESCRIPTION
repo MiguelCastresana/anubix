@@ -8,6 +8,7 @@ Depends:
 	R (>= 3.4.0)
 Imports:
     dplyr,
+    Matrix,
     optimx,
     TailRank,
     parallel,
@@ -15,6 +16,9 @@ Imports:
     purrr,
     stats,
     tibble
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
